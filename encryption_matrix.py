@@ -1,19 +1,20 @@
 
 import numpy as np
 
+#ASCII文字 SP から ~ までの95文字に対応
 
 plain=(input("平文をを入力してください\n"))
 plainlst=list(plain)
 word_count=len(plainlst)
 asciilst = []
-n = 26
+n = 94 #進数
+m = 32 #spaceを0にする
 
 
 
-
-#文字列を数値に変換
+#---文字列を数値に変換---
 for s in plain:
-    ord_num = ord(s) - 65 #Aを基準に
+    ord_num = ord(s) - m
     asciilst.append(ord_num)
     
     
@@ -21,8 +22,8 @@ if word_count % 2 != 0:
     asciilst.append(0)
     
 
-#print(asciilst)
-#numpy配列に変換
+
+#---numpy配列に変換---
 lst_e = asciilst[::2]
 lst_o = asciilst[1::2]
 asciilst = lst_e + lst_o
@@ -31,10 +32,10 @@ asciinp = np.array(asciilst) #listをnumpy配列に変換
 
 asciinp = np.reshape(asciinp,[2,-1])
 
-#print(asciinp)
 
 
-#暗号化の処理
+
+#-------暗号化の処理-------
 print("暗号化鍵を入力してください")
 
 print("[a,b]")
@@ -49,34 +50,33 @@ d = int(input("d="))
 key = np.array([[a,b],[c,d]])
 
 cry_ = np.dot(key,asciinp)
-#print(cry_)
-cry_ = np.mod(cry_,n)
-#print(cry_)
 
+cry_ = np.mod(cry_,n)
+
+#---結果の表示---
 cry = cry_.T
 cry = np.ravel(cry)#一次元化
 
 cry = cry.tolist()
 
-#print(cry)
-
 cryascii = []
 for s in cry:
-    ord_num = chr(s+65)  
+    ord_num = chr(s+m)  
     cryascii.append(ord_num)
 
+cryascii = ''.join(cryascii)
 print("暗号化した結果")
 print(cryascii)
 
 
 
-#復号化
+#-------復号化-------
 
 key = np.array([[d,-b],[-c,a]])
 det = np.linalg.det(key) % n #行列式を求める
 
-#nを法とした逆行列を求める。
-# 商と余りと割られる数の保存先
+#---nを法とした逆行列を求める---
+#商と余りと割られる数の保存先
 qlist =[]
 rlist =[]
 wlist =[]
@@ -87,7 +87,7 @@ t = n #値の保存
 r = s #とりあえず余りとしてaをおく
 i = 0 #式の番号
 
-#ユークリッドの互除法----------
+#---ユークリッドの互除法---
 while(r != 0 ):
     q = s // t
     r = s % t
@@ -99,9 +99,9 @@ while(r != 0 ):
     s = t
     t = r
     i += 1
-#-------------------------
+#--------------------
 
-#一次不定方程式------------
+#---一次不定方程式----
 i = i - 2
 
 q = qlist[i]
@@ -131,8 +131,11 @@ while(i > 0):
     j = h #値の入れ替え
     
     i = i-1
-#-------------------------
+#------------------
 
+
+
+#-----結果の表示-----
 print()
 print("x ≡",j,"(mod",n,")" )
 print()
@@ -145,18 +148,16 @@ print("複合化鍵は")
 print(keymod)
 
 cry_ = np.dot(keymod,cry_)
-#print(cry_)
+
 cry_ = np.mod(cry_,n)
-#print(cry_)
 
 cry = cry_.T
 cry = np.ravel(cry)#一次元化
 
 cry = cry.tolist()
-#print(cry)
 
 
-    
+
 for s in range(word_count):
     cry[s] = int(cry[s])
     
@@ -165,16 +166,16 @@ if word_count % 2 != 0:
     word_count += 1
     
     
-print(cry)
+print("")
 
 
 cryascii = []
 for s in cry:
-    ord_num = chr(s+65)  
+    ord_num = chr(s + m)  
     cryascii.append(ord_num)
     
-
-print("複合化鍵した結果")
+cryascii = ''.join(cryascii)
+print("複合化した結果")
 print(cryascii)
 
 
